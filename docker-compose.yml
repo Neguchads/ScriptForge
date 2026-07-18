@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0-alpine
+    container_name: sunoforge-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-sunoforge}
+      MYSQL_USER: ${MYSQL_USER:-sunoforge}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-sunoforgepass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sunoforge-network
+
+  # SunoForge Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sunoforge-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      DATABASE_URL: mysql://${MYSQL_USER:-sunoforge}:${MYSQL_PASSWORD:-sunoforgepass}@mysql:3306/${MYSQL_DATABASE:-sunoforge}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-change-in-production}
+      VITE_APP_ID: ${VITE_APP_ID:-your-oauth-app-id}
+      OAUTH_SERVER_URL: ${OAUTH_SERVER_URL:-https://api.manus.im}
+      VITE_OAUTH_PORTAL_URL: ${VITE_OAUTH_PORTAL_URL:-https://manus.im}
+      BUILT_IN_FORGE_API_URL: ${BUILT_IN_FORGE_API_URL:-https://api.manus.im}
+      BUILT_IN_FORGE_API_KEY: ${BUILT_IN_FORGE_API_KEY:-your-api-key}
+      VITE_FRONTEND_FORGE_API_KEY: ${VITE_FRONTEND_FORGE_API_KEY:-your-frontend-key}
+      VITE_FRONTEND_FORGE_API_URL: ${VITE_FRONTEND_FORGE_API_URL:-https://api.manus.im}
+      OWNER_NAME: ${OWNER_NAME:-Owner}
+      OWNER_OPEN_ID: ${OWNER_OPEN_ID:-owner-id}
+      VITE_APP_TITLE: ${VITE_APP_TITLE:-SunoForge}
+      VITE_APP_LOGO: ${VITE_APP_LOGO:-/logo.png}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/dist
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - sunoforge-network
+
+  # Redis (opcional, para caching)
+  redis:
+    image: redis:7-alpine
+    container_name: sunoforge-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sunoforge-network
+    profiles:
+      - with-redis
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  sunoforge-network:
+    driver: bridge

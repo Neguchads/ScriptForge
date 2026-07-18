@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO `flashcardCategories` (`name`, `description`, `icon`, `color`) VALUES\n('Suno AI', 'Guia completo sobre Suno - criação de música com IA', '🎵', '#00FFFF'),\n('Produção Musical', 'Técnicas e conceitos de produção de música', '🎚️', '#FF00FF'),\n('Artwork & Design', 'Criação de capas de álbum e artes visuais', '🎨', '#00FFFF'),\n('Thumbnails', 'Design de thumbnails para vídeos musicais', '📸', '#FF00FF'),\n('SEO para Música', 'Otimização de conteúdo musical para YouTube', '🔍', '#00FFFF'),\n('Equipamentos', 'Microfones, interfaces e software essencial', '🎙️', '#FF00FF'),\n('Distribuição', 'Publicar música em plataformas de streaming', '🚀', '#00FFFF'),\n('Monetização', 'Ganhar dinheiro com conteúdo musical', '💰', '#FF00FF');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ggqrb6amRNtJoxc.7a8b5ba0d6df --database nkCFiMyRgb4RxN9uhszYYM --execute INSERT INTO `flashcardCategories` (`name`, `description`, `icon`, `color`) VALUES\n('Suno AI', 'Guia completo sobre Suno - criação de música com IA', '🎵', '#00FFFF'),\n('Produção Musical', 'Técnicas e conceitos de produção de música', '🎚️', '#FF00FF'),\n('Artwork & Design', 'Criação de capas de álbum e artes visuais', '🎨', '#00FFFF'),\n('Thumbnails', 'Design de thumbnails para vídeos musicais', '📸', '#FF00FF'),\n('SEO para Música', 'Otimização de conteúdo musical para YouTube', '🔍', '#00FFFF'),\n('Equipamentos', 'Microfones, interfaces e software essencial', '🎙️', '#FF00FF'),\n('Distribuição', 'Publicar música em plataformas de streaming', '🚀', '#00FFFF'),\n('Monetização', 'Ganhar dinheiro com conteúdo musical', '💰', '#FF00FF');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 366
+}

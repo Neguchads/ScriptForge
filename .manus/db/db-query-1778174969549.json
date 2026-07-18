@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO niches (name, description) VALUES\n('Programação', 'Desenvolvimento de software, linguagens de programação, frameworks e ferramentas'),\n('Eletrônica', 'Projetos eletrônicos, Arduino, circuitos e componentes'),\n('Mecatrônica', 'Robótica, automação, sistemas integrados e projetos mecatrônicos'),\n('Design', 'UI/UX, design gráfico, ferramentas de design e criatividade'),\n('Marketing Digital', 'SEO, redes sociais, publicidade e estratégias de marketing'),\n('Produção de Vídeo', 'Edição, cinematografia, efeitos e produção audiovisual'),\n('Educação', 'Tutoriais, cursos, explicações educacionais e aprendizado'),\n('Tecnologia', 'Análise de produtos, reviews, tendências tech e inovação');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway06.us-east-1.prod.aws.tidbcloud.com --port 4000 --user ggqrb6amRNtJoxc.7a8b5ba0d6df --database nkCFiMyRgb4RxN9uhszYYM --execute INSERT INTO niches (name, description) VALUES\n('Programação', 'Desenvolvimento de software, linguagens de programação, frameworks e ferramentas'),\n('Eletrônica', 'Projetos eletrônicos, Arduino, circuitos e componentes'),\n('Mecatrônica', 'Robótica, automação, sistemas integrados e projetos mecatrônicos'),\n('Design', 'UI/UX, design gráfico, ferramentas de design e criatividade'),\n('Marketing Digital', 'SEO, redes sociais, publicidade e estratégias de marketing'),\n('Produção de Vídeo', 'Edição, cinematografia, efeitos e produção audiovisual'),\n('Educação', 'Tutoriais, cursos, explicações educacionais e aprendizado'),\n('Tecnologia', 'Análise de produtos, reviews, tendências tech e inovação');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 270
+}

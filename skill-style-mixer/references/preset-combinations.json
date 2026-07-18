@@ -1,0 +1,154 @@
+{
+  "presets": [
+    {
+      "name": "Dark Lo-Fi Baroque",
+      "description": "Melancholic lo-fi beats with baroque classical elements",
+      "genres": ["Lo-Fi", "Classical", "Ambient"],
+      "subgenres": ["Lo-Fi Hip-Hop", "Baroque", "Chillhop"],
+      "influences": ["Bach", "Boards of Canada", "Nujabes"],
+      "eras": ["1700s", "2010s"],
+      "vocalStyles": ["Operatic", "Whispered"],
+      "productionTechniques": ["Sampling", "Lo-Fi Quality", "Layering"],
+      "characteristics": {
+        "Mood": ["Dark", "Melancholic", "Introspective"],
+        "Texture": ["Atmospheric", "Organic"],
+        "Production": ["Lo-Fi Quality", "Analog Warmth"]
+      }
+    },
+    {
+      "name": "Cyber Synthwave Noir",
+      "description": "80s synthwave with cyberpunk darkness and noir atmosphere",
+      "genres": ["Synthwave", "Cyberpunk", "Electronic"],
+      "subgenres": ["Darkwave", "Vaporwave", "Synthpop"],
+      "influences": ["Vangelis", "Daft Punk", "Grimes"],
+      "eras": ["1980s", "2020s"],
+      "vocalStyles": ["Robotic", "Processed", "Ethereal"],
+      "productionTechniques": ["Heavy Synth", "Reverb", "Distortion"],
+      "characteristics": {
+        "Mood": ["Dark", "Mysterious", "Intense"],
+        "Texture": ["Synthetic", "Layered"],
+        "Production": ["Heavy Synth", "Digital Precision"]
+      }
+    },
+    {
+      "name": "Techno Industrial Experimental",
+      "description": "Aggressive techno with industrial elements and experimental sound design",
+      "genres": ["Techno", "Industrial", "Experimental"],
+      "subgenres": ["Acid Techno", "Industrial Metal", "Glitch"],
+      "influences": ["Kraftwerk", "Autechre", "Arca"],
+      "eras": ["1980s", "1990s", "2020s"],
+      "vocalStyles": ["Distorted", "Glitchy", "Spoken Word"],
+      "productionTechniques": ["Distortion", "Glitchy", "Granulation"],
+      "characteristics": {
+        "Mood": ["Aggressive", "Intense", "Mysterious"],
+        "Texture": ["Dense", "Chaotic"],
+        "Production": ["Distorted", "Digital Precision"]
+      }
+    },
+    {
+      "name": "Jazz Funk Soul Groove",
+      "description": "Smooth jazz fusion with funk rhythms and soulful vocals",
+      "genres": ["Jazz", "Funk", "Soul"],
+      "subgenres": ["Fusion", "Funk Jazz", "Neo-Soul"],
+      "influences": ["Miles Davis", "Herbie Hancock", "Stevie Wonder"],
+      "eras": ["1970s", "1980s", "2000s"],
+      "vocalStyles": ["Soulful", "Smooth", "Layered"],
+      "productionTechniques": ["Layering", "Analog Warmth", "Improvisation"],
+      "characteristics": {
+        "Mood": ["Sophisticated", "Uplifting", "Energetic"],
+        "Texture": ["Organic", "Layered"],
+        "Production": ["Analog Warmth", "Dynamic"]
+      }
+    },
+    {
+      "name": "Ambient Ethereal Minimalist",
+      "description": "Peaceful ambient soundscapes with ethereal textures and minimal elements",
+      "genres": ["Ambient", "Experimental", "Chillwave"],
+      "subgenres": ["Drone", "Ambient Electronic", "Minimalism"],
+      "influences": ["Brian Eno", "Aphex Twin", "Amon Düül II"],
+      "eras": ["1970s", "1990s", "2010s"],
+      "vocalStyles": ["Whispered", "Ethereal", "Processed"],
+      "productionTechniques": ["Reverb", "Delay", "Layering"],
+      "characteristics": {
+        "Mood": ["Peaceful", "Ethereal", "Introspective"],
+        "Texture": ["Sparse", "Atmospheric"],
+        "Production": ["Reverb-Heavy", "Analog Warmth"]
+      }
+    },
+    {
+      "name": "Hip-Hop Trap Boom Bap",
+      "description": "Modern trap beats with classic boom bap hip-hop elements",
+      "genres": ["Hip-Hop", "Trap", "Rap"],
+      "subgenres": ["Trap", "Boom Bap", "Cloud Rap"],
+      "influences": ["Kendrick Lamar", "J Dilla", "Kanye West"],
+      "eras": ["1990s", "2000s", "2010s"],
+      "vocalStyles": ["Powerful", "Rhythmic", "Layered"],
+      "productionTechniques": ["Sampling", "Chopping", "Compression"],
+      "characteristics": {
+        "Mood": ["Energetic", "Aggressive", "Sophisticated"],
+        "Texture": ["Dense", "Layered"],
+        "Production": ["Sampling", "Hi-Fi Clarity"]
+      }
+    },
+    {
+      "name": "Progressive Metal Symphony",
+      "description": "Complex progressive metal with symphonic orchestral arrangements",
+      "genres": ["Metal", "Prog Rock", "Symphonic Metal"],
+      "subgenres": ["Progressive Metal", "Symphonic Metal", "Power Metal"],
+      "influences": ["Dream Theater", "Opeth", "Epica"],
+      "eras": ["1970s", "1990s", "2000s"],
+      "vocalStyles": ["Powerful", "Operatic", "Growl"],
+      "productionTechniques": ["Layering", "Distortion", "Orchestration"],
+      "characteristics": {
+        "Mood": ["Intense", "Sophisticated", "Aggressive"],
+        "Texture": ["Dense", "Orchestral"],
+        "Production": ["Distorted", "Maximalist"]
+      }
+    },
+    {
+      "name": "Indie Bedroom Pop Dreamy",
+      "description": "Intimate indie pop with dreamy production and bedroom recording aesthetic",
+      "genres": ["Indie", "Pop", "Alternative"],
+      "subgenres": ["Bedroom Pop", "Indie Pop", "Dream Pop"],
+      "influences": ["Radiohead", "Mac DeMarco", "FKA twigs"],
+      "eras": ["1990s", "2000s", "2010s"],
+      "vocalStyles": ["Whispered", "Breathy", "Layered"],
+      "productionTechniques": ["Lo-Fi Quality", "Reverb", "Layering"],
+      "characteristics": {
+        "Mood": ["Dreamy", "Introspective", "Peaceful"],
+        "Texture": ["Sparse", "Atmospheric"],
+        "Production": ["Lo-Fi Quality", "Analog Warmth"]
+      }
+    },
+    {
+      "name": "EDM Festival Euphoric",
+      "description": "High-energy EDM with euphoric melodies and festival vibes",
+      "genres": ["EDM", "House", "Trance"],
+      "subgenres": ["Progressive House", "Trance", "Big Room"],
+      "influences": ["Daft Punk", "Deadmau5", "Tiësto"],
+      "eras": ["1990s", "2000s", "2010s"],
+      "vocalStyles": ["Powerful", "Processed", "Layered"],
+      "productionTechniques": ["Sidechain", "Automation", "Synthesis"],
+      "characteristics": {
+        "Mood": ["Euphoric", "Energetic", "Uplifting"],
+        "Texture": ["Dense", "Layered"],
+        "Production": ["Digital Precision", "Maximalist"]
+      }
+    },
+    {
+      "name": "Vaporwave Nostalgic Surreal",
+      "description": "Nostalgic vaporwave with surreal samples and 80s/90s aesthetics",
+      "genres": ["Vaporwave", "Electronic", "Ambient"],
+      "subgenres": ["Vaporwave", "Chillwave", "Synthwave"],
+      "influences": ["Macintosh Plus", "Blank Banshee", "Oneohtrix Point Never"],
+      "eras": ["1980s", "1990s", "2010s"],
+      "vocalStyles": ["Processed", "Sampled", "Ethereal"],
+      "productionTechniques": ["Sampling", "Time-Stretching", "Reverb"],
+      "characteristics": {
+        "Mood": ["Mysterious", "Nostalgic", "Ethereal"],
+        "Texture": ["Atmospheric", "Surreal"],
+        "Production": ["Reverb-Heavy", "Analog Warmth"]
+      }
+    }
+  ]
+}
