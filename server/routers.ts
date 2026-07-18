@@ -1,6 +1,15 @@
 import { COOKIE_NAME } from "@shared/const";
 import { exportRouter } from "./export-routers";
 import { integrationRouter } from "./routers/integration";
+import { ideasRouter } from "./routers/ideas";
+import { scriptsRouter } from "./routers/scripts";
+import { templatesRouter } from "./routers/templates";
+import { analyticsRouter } from "./routers/analytics";
+import { flashcardsRouter } from "./routers/flashcards";
+import { quizRouter } from "./routers/quiz";
+import { searchRouter } from "./routers/search";
+import { certificatesRouter } from "./routers/certificates";
+import { recommendationsRouter } from "./routers/recommendations";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
@@ -729,6 +738,15 @@ export const appRouter = router({
   styleCombo: styleComboRouter,
   export: exportRouter,
   integration: integrationRouter,
+  ideas: ideasRouter,
+  scripts: scriptsRouter,
+  templates: templatesRouter,
+  analytics: analyticsRouter,
+  flashcards: flashcardsRouter,
+  quiz: quizRouter,
+  search: searchRouter,
+  certificates: certificatesRouter,
+  recommendations: recommendationsRouter,
 });
 
 export type AppRouter = typeof appRouter;
