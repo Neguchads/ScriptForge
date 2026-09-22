@@ -10,6 +10,9 @@ import { quizRouter } from "./routers/quiz";
 import { searchRouter } from "./routers/search";
 import { certificatesRouter } from "./routers/certificates";
 import { recommendationsRouter } from "./routers/recommendations";
+import { musicRouter } from "./routers/music";
+import { thumbnailsRouter } from "./routers/thumbnails";
+import { transcriptionRouter } from "./routers/transcription";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
@@ -747,6 +750,9 @@ export const appRouter = router({
   search: searchRouter,
   certificates: certificatesRouter,
   recommendations: recommendationsRouter,
+  music: musicRouter,
+  thumbnails: thumbnailsRouter,
+  transcription: transcriptionRouter,
 });
 
 export type AppRouter = typeof appRouter;
