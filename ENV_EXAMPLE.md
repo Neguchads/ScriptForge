@@ -21,6 +21,10 @@ VITE_APP_ID=your-oauth-app-id
 OAUTH_SERVER_URL=https://api.manus.im
 VITE_OAUTH_PORTAL_URL=https://manus.im
 
+# YouTube (OAuth para YouTube Manager - console.cloud.google.com)
+YOUTUBE_CLIENT_ID=your-youtube-oauth-client-id
+YOUTUBE_CLIENT_SECRET=your-youtube-oauth-client-secret
+
 # API Keys
 BUILT_IN_FORGE_API_URL=https://api.manus.im
 BUILT_IN_FORGE_API_KEY=your-api-key
@@ -56,6 +60,9 @@ VITE_ANALYTICS_WEBSITE_ID=your-website-id
 - `VITE_APP_ID`: ID da aplicação OAuth
 - `OAUTH_SERVER_URL`: URL do servidor OAuth
 - `VITE_OAUTH_PORTAL_URL`: URL do portal de login
+
+### YouTube
+- `YOUTUBE_CLIENT_ID` / `YOUTUBE_CLIENT_SECRET`: credenciais OAuth do Google Cloud Console (projeto com a YouTube Data API v3 habilitada). Redirect URI a autorizar: `<sua-origem>/api/youtube/oauth/callback`
 
 ### API Keys
 - `BUILT_IN_FORGE_API_URL`: URL da API Manus

@@ -23,8 +23,10 @@ import {
   InsertSearchHistory,
   scriptTemplates,
   youtubeUploads,
+  youtubeAuth,
   InsertScriptTemplate,
   InsertYoutubeUpload,
+  InsertYoutubeAuth,
   projects,
   generations,
   communityPosts,
@@ -390,6 +392,41 @@ export async function updateYoutubeUploadStatus(uploadId: number, status: string
   return db.update(youtubeUploads)
     .set(updateData)
     .where(eq(youtubeUploads.id, uploadId));
+}
+
+export async function getYoutubeAuth(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const results = await db.select()
+    .from(youtubeAuth)
+    .where(eq(youtubeAuth.userId, userId))
+    .limit(1);
+
+  return results.length > 0 ? results[0] : null;
+}
+
+export async function upsertYoutubeAuth(data: InsertYoutubeAuth) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db.insert(youtubeAuth).values(data).onDuplicateKeyUpdate({
+    set: {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      expiresAt: data.expiresAt,
+      channelId: data.channelId,
+      channelName: data.channelName,
+      updatedAt: new Date(),
+    },
+  });
+}
+
+export async function deleteYoutubeAuth(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db.delete(youtubeAuth).where(eq(youtubeAuth.userId, userId));
 }
 
 // ============================================================================

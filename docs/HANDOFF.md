@@ -92,19 +92,34 @@ Delete this repository.
 
 Em ordem recomendada de prioridade:
 
-1. **Frontend de YouTube** — parcialmente feito nesta sessão:
+1. **Frontend de YouTube** — feito nesta sessão:
    - ✅ `IdeasGenerator.tsx`, `ScriptCreator.tsx`, `ThumbnailsGenerator.tsx`
      criadas e validadas visualmente (rotas `/ideas`, `/scripts`,
      `/thumbnails` já registradas em `App.tsx`, já apareciam no menu do
      `AppLayout` mas sem página — agora têm)
-   - 🔲 **YouTube Manager** ainda falta — nem página nem router de
-     backend existem. Precisa criar `server/routers/youtube.ts` com
-     OAuth, upload e analytics — hoje só existe
-     `server/_core/youtubeApi.ts` como helper de baixo nível, sem
-     endpoints tRPC expostos
-   - 🔲 Testar o fluxo de geração de ponta a ponta (login real via OAuth
-     + chamada ao LLM) — não foi possível nesta sessão por falta de
-     `OAUTH_SERVER_URL`/`VITE_APP_ID` configurados
+   - ✅ **YouTube Manager**: OAuth real com Google implementado —
+     `server/_core/youtubeApi.ts` (troca de código por token, refresh,
+     estatísticas do canal, listagem de vídeos via YouTube Data API v3),
+     `server/routers/youtube.ts` (router tRPC registrado), rota de
+     callback `server/_core/youtubeOAuth.ts` registrada em
+     `server/_core/index.ts`, página `YouTubeManager.tsx` com
+     conectar/desconectar, cards de estatísticas e lista de vídeos.
+     Requer `YOUTUBE_CLIENT_ID`/`YOUTUBE_CLIENT_SECRET` (documentado em
+     `ENV_EXAMPLE.md`) — um projeto no Google Cloud Console com a
+     YouTube Data API v3 habilitada, redirect URI
+     `<origem>/api/youtube/oauth/callback`.
+   - 🔲 **Upload de vídeo real** ainda não implementado — só a leitura
+     (estatísticas + lista de vídeos). Fazer upload de fato exige lidar
+     com arquivo binário (multipart/resumable), o que passa de longe do
+     limite de 50mb de JSON body já configurado no Express — decisão
+     de dependência (multer/busboy) e de arquitetura que ficou de fora
+     de propósito por enquanto.
+   - 🔲 Testar o fluxo de ponta a ponta (login real via OAuth Manus +
+     conectar Google + chamada ao LLM) — não foi possível nesta sessão
+     por falta de `OAUTH_SERVER_URL`/`VITE_APP_ID`/`YOUTUBE_CLIENT_ID`
+     configurados. Validei apenas visualmente (renderização das telas
+     via Playwright headless, sem erros de console além dos já
+     existentes por falta de env vars).
 2. **Segurança** (Fase 8 do `todo.md`): RBAC, validação de input, rate
    limiting, CSRF, audit log — tudo pendente ainda
 3. **Testes reais/E2E** (Fase 9): `integration.test.ts` hoje é placeholder

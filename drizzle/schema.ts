@@ -223,6 +223,8 @@ export const youtubeAuth = mysqlTable("youtube_auth", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+export type InsertYoutubeAuth = typeof youtubeAuth.$inferInsert;
+
 // YouTube Upload Tables
 export const youtubeUploads = mysqlTable("youtube_uploads", {
   id: int("id").autoincrement().primaryKey(),

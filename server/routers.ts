@@ -13,6 +13,7 @@ import { recommendationsRouter } from "./routers/recommendations";
 import { musicRouter } from "./routers/music";
 import { thumbnailsRouter } from "./routers/thumbnails";
 import { transcriptionRouter } from "./routers/transcription";
+import { youtubeRouter } from "./routers/youtube";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
@@ -753,6 +754,7 @@ export const appRouter = router({
   music: musicRouter,
   thumbnails: thumbnailsRouter,
   transcription: transcriptionRouter,
+  youtube: youtubeRouter,
 });
 
 export type AppRouter = typeof appRouter;

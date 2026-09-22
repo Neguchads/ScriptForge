@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import IdeasGenerator from "./pages/IdeasGenerator";
 import ScriptCreator from "./pages/ScriptCreator";
 import ThumbnailsGenerator from "./pages/ThumbnailsGenerator";
+import YouTubeManager from "./pages/YouTubeManager";
 import LyricsGenerator from "./pages/LyricsGenerator";
 import StyleGenerator from "./pages/StyleGenerator";
 import FullSongCreator from "./pages/FullSongCreator";
@@ -28,6 +29,7 @@ function Router() {
         <Route path="/ideas" component={IdeasGenerator} />
         <Route path="/scripts" component={ScriptCreator} />
         <Route path="/thumbnails" component={ThumbnailsGenerator} />
+        <Route path="/youtube" component={YouTubeManager} />
         <Route path="/lyrics" component={LyricsGenerator} />
         <Route path="/style" component={StyleGenerator} />
         <Route path="/fullsong" component={FullSongCreator} />
