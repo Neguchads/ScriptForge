@@ -22,6 +22,20 @@
       "when": 1778596640732,
       "tag": "0002_bizarre_power_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1790098686529,
+      "tag": "0003_freezing_swordsman",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1790100852564,
+      "tag": "0004_last_the_executioner",
+      "breakpoints": true
     }
   ]
 }

@@ -130,6 +130,42 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createLocalUser(user: {
+  name: string;
+  email: string;
+  passwordHash: string;
+}) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const openId = `local:${user.email}`;
+
+  await db.insert(users).values({
+    openId,
+    name: user.name,
+    email: user.email,
+    passwordHash: user.passwordHash,
+    loginMethod: "local",
+    role: openId === ENV.ownerOpenId ? "admin" : "user",
+  });
+
+  return getUserByOpenId(openId);
+}
+
 // ============================================================================
 // YOUTUBE CONTENT CREATION HELPERS (ScriptTube)
 // ============================================================================

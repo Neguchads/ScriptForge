@@ -20,6 +20,7 @@ import Library from "./pages/Library";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Export from "./pages/Export";
+import Login from "./pages/Login";
 
 function Router() {
   return (
@@ -40,6 +41,7 @@ function Router() {
         <Route path="/explore" component={Explore} />
         <Route path="/profile" component={Profile} />
         <Route path="/export" component={Export} />
+        <Route path="/login" component={Login} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
