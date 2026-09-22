@@ -6,6 +6,9 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import AppLayout from "./components/AppLayout";
 import Home from "./pages/Home";
+import IdeasGenerator from "./pages/IdeasGenerator";
+import ScriptCreator from "./pages/ScriptCreator";
+import ThumbnailsGenerator from "./pages/ThumbnailsGenerator";
 import LyricsGenerator from "./pages/LyricsGenerator";
 import StyleGenerator from "./pages/StyleGenerator";
 import FullSongCreator from "./pages/FullSongCreator";
@@ -22,6 +25,9 @@ function Router() {
     <AppLayout>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/ideas" component={IdeasGenerator} />
+        <Route path="/scripts" component={ScriptCreator} />
+        <Route path="/thumbnails" component={ThumbnailsGenerator} />
         <Route path="/lyrics" component={LyricsGenerator} />
         <Route path="/style" component={StyleGenerator} />
         <Route path="/fullsong" component={FullSongCreator} />

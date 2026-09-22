@@ -43,6 +43,7 @@ MySQL/TiDB via Drizzle ORM.
 | `39499cf` | Registra os 3 routers órfãos em `appRouter` |
 | `b20be0b` | Cria `drizzle/seed.ts` — popula niches, flashcard categories/flashcards (~65) e script templates (5), recuperados dos logs `.manus/db/*.json` que nunca tinham virado seed reutilizável |
 | `a3abc35` | Adiciona `docs/DATABASE_SETUP.md` com o guia de setup do TiDB Cloud |
+| (próximo) | Cria 3 páginas de frontend de YouTube: `IdeasGenerator.tsx`, `ScriptCreator.tsx`, `ThumbnailsGenerator.tsx` + rotas em `App.tsx`. Validado rodando `pnpm dev` + Playwright headless — as 3 telas renderizam corretamente e batem com o padrão visual do resto do app (ver screenshots enviados no chat). Os botões de gerar dependem de login (routers são `protectedProcedure`), então a geração de conteúdo em si não foi testada de ponta a ponta (precisa de OAuth configurado) |
 
 Tudo isso já passou em `pnpm check` (0 erros). Os testes que ainda falham
 (`music`, `quiz`, `flashcards`, `templates`) falham só por falta de
@@ -91,15 +92,19 @@ Delete this repository.
 
 Em ordem recomendada de prioridade:
 
-1. **Frontend de YouTube** — não existe em nenhum lugar (nem no
-   `scripttube-ai`). Precisa ser desenhado do zero:
-   - Ideas Generator, Script Creator, Thumbnails Generator, YouTube Manager
-   - Backend de `ideas` e `scripts` já existe e está registrado
-   - Falta criar router de YouTube Manager (OAuth, upload, analytics) —
-     hoje só existe `server/_core/youtubeApi.ts` como helper de baixo
-     nível, sem endpoints tRPC
-   - Seguir o padrão visual das páginas de música (`AppLayout`, tema dark
-     cyber-music, componentes shadcn/ui) documentado em `docs/FRONTEND.md`
+1. **Frontend de YouTube** — parcialmente feito nesta sessão:
+   - ✅ `IdeasGenerator.tsx`, `ScriptCreator.tsx`, `ThumbnailsGenerator.tsx`
+     criadas e validadas visualmente (rotas `/ideas`, `/scripts`,
+     `/thumbnails` já registradas em `App.tsx`, já apareciam no menu do
+     `AppLayout` mas sem página — agora têm)
+   - 🔲 **YouTube Manager** ainda falta — nem página nem router de
+     backend existem. Precisa criar `server/routers/youtube.ts` com
+     OAuth, upload e analytics — hoje só existe
+     `server/_core/youtubeApi.ts` como helper de baixo nível, sem
+     endpoints tRPC expostos
+   - 🔲 Testar o fluxo de geração de ponta a ponta (login real via OAuth
+     + chamada ao LLM) — não foi possível nesta sessão por falta de
+     `OAUTH_SERVER_URL`/`VITE_APP_ID` configurados
 2. **Segurança** (Fase 8 do `todo.md`): RBAC, validação de input, rate
    limiting, CSRF, audit log — tudo pendente ainda
 3. **Testes reais/E2E** (Fase 9): `integration.test.ts` hoje é placeholder
