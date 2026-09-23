@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { sdk } from "./_core/sdk";
 import { hashPassword, verifyPassword } from "./_core/password";
 import { getUserByEmail, createLocalUser } from "./db";
+import { stripPasswordHash } from "./_core/context";
 import { exportRouter } from "./export-routers";
 import { integrationRouter } from "./routers/integration";
 import { ideasRouter } from "./routers/ideas";
@@ -74,7 +75,7 @@ const authRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      return user;
+      return stripPasswordHash(user);
     }),
   login: publicProcedure
     .input(
@@ -96,7 +97,7 @@ const authRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      return user;
+      return stripPasswordHash(user);
     }),
   logout: publicProcedure.mutation(({ ctx }) => {
     const cookieOptions = getSessionCookieOptions(ctx.req);

@@ -154,13 +154,16 @@ export async function createLocalUser(user: {
 
   const openId = `local:${user.email}`;
 
+  // Cadastro local nunca vira admin sozinho — role admin só via provisionamento
+  // manual (seed/DB direto). openId===ownerOpenId era só pro fluxo OAuth, onde
+  // o openId vem de um provedor confiável, não de um e-mail escolhido pelo usuário.
   await db.insert(users).values({
     openId,
     name: user.name,
     email: user.email,
     passwordHash: user.passwordHash,
     loginMethod: "local",
-    role: openId === ENV.ownerOpenId ? "admin" : "user",
+    role: "user",
   });
 
   return getUserByOpenId(openId);
