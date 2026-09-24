@@ -37,6 +37,32 @@ export default function Profile() {
     }
   }, [prefsQuery.data]);
 
+  const [showDelete, setShowDelete] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const exportQuery = trpc.auth.exportMyData.useQuery(undefined, { enabled: false });
+  const deleteMutation = trpc.auth.deleteAccount.useMutation({
+    onSuccess: () => {
+      toast.success("Conta excluída.");
+      window.location.href = "/";
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const handleExport = async () => {
+    const result = await exportQuery.refetch();
+    if (!result.data) {
+      toast.error("Não foi possível exportar seus dados.");
+      return;
+    }
+    const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "meus-dados-scriptforge.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   const saveMutation = trpc.preferences.save.useMutation({
     onSuccess: () => toast.success("Preferências salvas!"),
     onError: (err) => toast.error(err.message),
@@ -76,7 +102,7 @@ export default function Profile() {
             <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
             <div className="flex items-center gap-2 mt-1">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-              <span className="text-xs text-muted-foreground">Conta ativa · Manus OAuth</span>
+              <span className="text-xs text-muted-foreground">Conta local</span>
             </div>
           </div>
         </div>
@@ -171,9 +197,44 @@ export default function Profile() {
       {/* Danger zone */}
       <div className="cyber-card p-4 border-destructive/20">
         <h4 className="text-sm font-medium text-muted-foreground mb-3">Conta</h4>
-        <Button variant="outline" onClick={() => logout()} className="gap-2 border-destructive/30 text-destructive hover:bg-destructive/10 text-sm">
-          Sair da Conta
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => logout()} className="gap-2 text-sm">
+            Sair da Conta
+          </Button>
+          <Button variant="outline" onClick={handleExport} disabled={exportQuery.isFetching} className="gap-2 text-sm">
+            Exportar meus dados
+          </Button>
+          <Button variant="outline" onClick={() => setShowDelete(!showDelete)} className="gap-2 border-destructive/30 text-destructive hover:bg-destructive/10 text-sm">
+            Excluir minha conta
+          </Button>
+        </div>
+        {showDelete && (
+          <div className="mt-4 space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Isso apaga sua conta e todos os seus dados, sem volta. Digite sua senha para confirmar.
+            </p>
+            <div className="flex gap-2">
+              <Input
+                type="password"
+                value={deletePassword}
+                onChange={e => setDeletePassword(e.target.value)}
+                placeholder="Sua senha"
+                className="text-sm bg-input border-border"
+              />
+              <Button
+                onClick={() => deleteMutation.mutate({ password: deletePassword })}
+                disabled={!deletePassword || deleteMutation.isPending}
+                className="text-sm bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Excluir definitivamente"}
+              </Button>
+            </div>
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground mt-3">
+          <a href="/privacidade" className="underline">Política de Privacidade</a> ·{" "}
+          <a href="/termos" className="underline">Termos de Uso</a>
+        </p>
       </div>
     </div>
   );

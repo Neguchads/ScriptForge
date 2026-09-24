@@ -4,7 +4,7 @@ import { getFlashcardsByCategory, getAllFlashcardCategories } from "../db";
 
 export const recommendationsRouter = router({
   byTheme: publicProcedure
-    .input(z.object({ theme: z.string().min(1), limit: z.number().default(5) }))
+    .input(z.object({ theme: z.string().min(1).max(2000), limit: z.number().int().min(1).max(100).default(5) }))
     .query(async ({ input }) => {
       const categories = await getAllFlashcardCategories();
       
@@ -28,7 +28,7 @@ export const recommendationsRouter = router({
     }),
 
   byNiche: publicProcedure
-    .input(z.object({ niche: z.string().min(1), limit: z.number().default(5) }))
+    .input(z.object({ niche: z.string().min(1), limit: z.number().int().min(1).max(100).default(5) }))
     .query(async ({ input }) => {
       const categories = await getAllFlashcardCategories();
       
@@ -47,7 +47,7 @@ export const recommendationsRouter = router({
     }),
 
   forScriptTitle: publicProcedure
-    .input(z.object({ title: z.string().min(1), limit: z.number().default(5) }))
+    .input(z.object({ title: z.string().min(1).max(500), limit: z.number().int().min(1).max(100).default(5) }))
     .query(async ({ input }) => {
       const categories = await getAllFlashcardCategories();
       

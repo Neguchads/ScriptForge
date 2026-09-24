@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ export default function Login() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const onSuccess = () => {
     utils.auth.me.invalidate();
@@ -37,7 +38,11 @@ export default function Login() {
     if (mode === "login") {
       loginMutation.mutate({ email, password });
     } else {
-      registerMutation.mutate({ name, email, password });
+      if (!acceptTerms) {
+        toast.error("Aceite os Termos de Uso e a Política de Privacidade para criar a conta.");
+        return;
+      }
+      registerMutation.mutate({ name, email, password, acceptTerms: true });
     }
   };
 
@@ -88,6 +93,21 @@ export default function Login() {
               className="bg-input border-border text-sm"
             />
           </div>
+
+          {mode === "register" && (
+            <label className="flex items-start gap-2 text-xs text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+                className="mt-0.5"
+              />
+              <span>
+                Li e aceito os <Link href="/termos" className="underline">Termos de Uso</Link> e a{" "}
+                <Link href="/privacidade" className="underline">Política de Privacidade</Link>.
+              </span>
+            </label>
+          )}
 
           <Button type="submit" disabled={pending} className="cyber-btn text-white gap-2 w-full">
             {pending ? (

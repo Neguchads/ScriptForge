@@ -15,6 +15,8 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    // Alguns testes chamam a API do Gemini de verdade e passam de 5s.
+    testTimeout: 30_000,
     include: ["server/**/*.test.ts", "server/**/*.spec.ts"],
   },
 });

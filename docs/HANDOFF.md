@@ -5,8 +5,23 @@ do ScriptForge, e o que fazer a seguir. Serve tanto pra você quanto pra
 outra sessão do Claude Code retomar o trabalho sem precisar re-analisar
 tudo de novo.
 
-Branch com todo o trabalho: **`claude/project-analysis-uxr1mh`**
-PR aberta (draft): https://github.com/Neguchads/ScriptForge/pull/1
+> **Atualização (24/09/2026):** a PR #1 foi mergeada. O trabalho seguinte está na
+> branch `feat/free-images-and-cleanup`. Estado atual:
+> - Login local (e-mail e senha, sem Manus), IA de texto via Gemini grátis, imagens via
+>   Pollinations (data URL, sem disco), rate limiting, cabeçalhos de segurança.
+> - LGPD básica: aceite dos termos, páginas `/privacidade` e `/termos`, exportar e
+>   excluir conta no Perfil. Os textos são um modelo: validar com advogado.
+> - Publicação: `Dockerfile` validado (imagem sem `.env`, usuário não-root, healthcheck).
+>   Variáveis em [ENV_EXAMPLE.md](../ENV_EXAMPLE.md). Falta escolher a hospedagem.
+> - Testes: 150/150. Dependências: 0 vulnerabilidades críticas ou altas.
+> - Pendente: apagar `server/_core/storageProxy.ts`, `server/_core/oauth.ts`,
+>   `server/storage.ts` e `client/src/components/ManusDialog.tsx` (código morto);
+>   definir `VITE_CONTACT_EMAIL`; colocar a chave Gemini no `.env`.
+>
+> O texto abaixo é o histórico da primeira sessão (unificação) e está parcialmente desatualizado.
+
+Branch da primeira sessão: **`claude/project-analysis-uxr1mh`** (mergeada)
+PR: https://github.com/Neguchads/ScriptForge/pull/1
 
 ---
 
