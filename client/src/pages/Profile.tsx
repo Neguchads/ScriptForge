@@ -76,7 +76,7 @@ export default function Profile() {
             <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
             <div className="flex items-center gap-2 mt-1">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-              <span className="text-xs text-muted-foreground">Conta ativa · Manus OAuth</span>
+              <span className="text-xs text-muted-foreground">Conta local</span>
             </div>
           </div>
         </div>

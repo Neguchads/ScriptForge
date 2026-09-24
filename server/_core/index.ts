@@ -3,7 +3,6 @@ import express from "express";
 import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
 import { registerYoutubeOAuthRoutes } from "./youtubeOAuth";
 import { UPLOADS_DIR } from "../storage";
 import { appRouter } from "../routers";
@@ -41,7 +40,6 @@ async function startServer() {
       setHeaders: res => res.setHeader("X-Content-Type-Options", "nosniff"),
     })
   );
-  registerOAuthRoutes(app);
   registerYoutubeOAuthRoutes(app);
   // tRPC API
   app.use(
