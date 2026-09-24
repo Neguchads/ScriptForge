@@ -216,7 +216,7 @@ const resolveApiUrl = () =>
 
 const assertApiKey = () => {
   if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+    throw new Error("BUILT_IN_FORGE_API_KEY (chave do Gemini) não está configurada");
   }
 };
 
@@ -309,21 +309,40 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     payload.response_format = normalizedResponseFormat;
   }
 
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
+  // Timeout por tentativa e até 2 retentativas em erros temporários do provedor
+  // (429/5xx são comuns no plano grátis do Gemini).
+  const RETRYABLE = new Set([429, 500, 502, 503, 504]);
+  const MAX_ATTEMPTS = 3;
+  let lastError = "";
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(resolveApiUrl(), {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${ENV.forgeApiKey}`,
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(45_000),
+      });
+
+      if (response.ok) {
+        return (await response.json()) as InvokeResult;
+      }
+
+      const errorText = await response.text();
+      lastError = `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`;
+      if (!RETRYABLE.has(response.status)) throw new Error(lastError);
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("LLM invoke failed")) throw error;
+      lastError = `LLM invoke failed: ${error instanceof Error ? error.message : String(error)}`;
+    }
+
+    if (attempt < MAX_ATTEMPTS) {
+      await new Promise(resolve => setTimeout(resolve, attempt * 1500));
+    }
   }
 
-  return (await response.json()) as InvokeResult;
+  throw new Error(lastError);
 }

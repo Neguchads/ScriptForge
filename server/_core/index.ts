@@ -4,11 +4,11 @@ import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerYoutubeOAuthRoutes } from "./youtubeOAuth";
-import { UPLOADS_DIR } from "../storage";
 import { createRateLimiter } from "./rateLimit";
+import { assertProductionConfig, securityHeaders } from "./security";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
-import { serveStatic, setupVite } from "./vite";
+import { serveStatic } from "./static";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -30,17 +30,19 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
+  assertProductionConfig();
+
   const app = express();
   const server = createServer(app);
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
-  app.use(
-    "/uploads",
-    express.static(UPLOADS_DIR, {
-      setHeaders: res => res.setHeader("X-Content-Type-Options", "nosniff"),
-    })
-  );
+  app.disable("x-powered-by");
+  // Atrás de proxy/hospedagem, informe quantos proxies confiar (ex: TRUST_PROXY=1)
+  // para o rate limit ver o IP real do visitante.
+  if (process.env.TRUST_PROXY) {
+    app.set("trust proxy", Number(process.env.TRUST_PROXY) || process.env.TRUST_PROXY);
+  }
+  app.use(securityHeaders);
+  app.use(express.json({ limit: "1mb" }));
+  app.use(express.urlencoded({ limit: "1mb", extended: true }));
   registerYoutubeOAuthRoutes(app);
   // tRPC API
   app.use(
@@ -53,6 +55,9 @@ async function startServer() {
   );
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
+    // Especificador em variável: o esbuild não embute este módulo no build de produção.
+    const devServerModule = "./vite.ts";
+    const { setupVite } = (await import(devServerModule)) as typeof import("./vite");
     await setupVite(app, server);
   } else {
     serveStatic(app);

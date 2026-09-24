@@ -2,8 +2,6 @@
  * Geração de imagem grátis via Pollinations.ai (sem conta, sem chave).
  * O Gemini não gera imagem no plano gratuito (quota 0), por isso este serviço.
  */
-import { storagePut } from "../storage";
-
 export type GenerateImageOptions = {
   prompt: string;
   width?: number;
@@ -43,9 +41,10 @@ export async function generateImage(
     throw new Error(`Image generation returned unexpected content type: ${contentType}`);
   }
 
+  // Devolve a imagem embutida (data URL): sem arquivo em disco, funciona em
+  // hospedagem com disco temporário e não acumula lixo.
   const buffer = Buffer.from(await response.arrayBuffer());
-  const extension = contentType.includes("png") ? "png" : "jpg";
-  const { url } = await storagePut(`generated/${Date.now()}.${extension}`, buffer);
+  const mimeType = contentType.split(";")[0].trim();
 
-  return { url };
+  return { url: `data:${mimeType};base64,${buffer.toString("base64")}` };
 }

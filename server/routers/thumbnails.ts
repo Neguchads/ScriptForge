@@ -5,8 +5,8 @@ import { generateImage } from "../_core/imageGeneration";
 export const thumbnailsRouter = router({
   generate: protectedProcedure
     .input(z.object({
-      title: z.string(),
-      theme: z.string(),
+      title: z.string().max(500),
+      theme: z.string().max(2000),
       style: z.string().optional(),
     }))
     .mutation(async ({ input }) => {
@@ -28,10 +28,7 @@ Requirements:
           throw new Error("Falha ao gerar imagem");
         }
 
-        return {
-          url: result.url,
-          key: result.url.replace(/^\/uploads\//, ""),
-        };
+        return { url: result.url };
       } catch (error) {
         console.error("Thumbnail generation error:", error);
         throw new Error("Falha ao gerar thumbnail");
