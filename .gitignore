@@ -101,6 +101,9 @@ jspm_packages/
 tmp/
 temp/
 
+# Imagens geradas (storage local)
+uploads/
+
 # Database
 *.db
 *.sqlite
