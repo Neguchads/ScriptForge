@@ -5,6 +5,7 @@ import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerYoutubeOAuthRoutes } from "./youtubeOAuth";
 import { UPLOADS_DIR } from "../storage";
+import { createRateLimiter } from "./rateLimit";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -44,6 +45,7 @@ async function startServer() {
   // tRPC API
   app.use(
     "/api/trpc",
+    createRateLimiter(),
     createExpressMiddleware({
       router: appRouter,
       createContext,
