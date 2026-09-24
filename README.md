@@ -177,6 +177,17 @@ pnpm dev
 
 ## 🛠️ Desenvolvimento
 
+### Banco de Dados
+
+Com `DATABASE_URL` configurada (veja Variáveis de Ambiente), aplique o schema e popule os dados de referência:
+
+```bash
+pnpm db:push   # cria/atualiza as tabelas
+pnpm db:seed   # popula niches, flashcards e templates de roteiro (idempotente)
+```
+
+`pnpm db:seed` recupera dados de referência (nichos de conteúdo, flashcards educativos e templates de roteiro) que originalmente só existiam em queries manuais rodadas durante o desenvolvimento. Pode ser rodado múltiplas vezes sem duplicar registros.
+
 ### Testes
 ```bash
 pnpm test

@@ -6,6 +6,10 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import AppLayout from "./components/AppLayout";
 import Home from "./pages/Home";
+import IdeasGenerator from "./pages/IdeasGenerator";
+import ScriptCreator from "./pages/ScriptCreator";
+import ThumbnailsGenerator from "./pages/ThumbnailsGenerator";
+import YouTubeManager from "./pages/YouTubeManager";
 import LyricsGenerator from "./pages/LyricsGenerator";
 import StyleGenerator from "./pages/StyleGenerator";
 import FullSongCreator from "./pages/FullSongCreator";
@@ -16,12 +20,17 @@ import Library from "./pages/Library";
 import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Export from "./pages/Export";
+import Login from "./pages/Login";
 
 function Router() {
   return (
     <AppLayout>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/ideas" component={IdeasGenerator} />
+        <Route path="/scripts" component={ScriptCreator} />
+        <Route path="/thumbnails" component={ThumbnailsGenerator} />
+        <Route path="/youtube" component={YouTubeManager} />
         <Route path="/lyrics" component={LyricsGenerator} />
         <Route path="/style" component={StyleGenerator} />
         <Route path="/fullsong" component={FullSongCreator} />
@@ -32,6 +41,7 @@ function Router() {
         <Route path="/explore" component={Explore} />
         <Route path="/profile" component={Profile} />
         <Route path="/export" component={Export} />
+        <Route path="/login" component={Login} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>

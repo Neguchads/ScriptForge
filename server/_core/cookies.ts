@@ -39,10 +39,13 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
+  const secure = isSecureRequest(req);
+
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req),
+    // SameSite=None exige Secure — em HTTP local (dev) o navegador rejeita o cookie.
+    sameSite: secure ? "none" : "lax",
+    secure,
   };
 }

@@ -1,4 +1,9 @@
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { TRPCError } from "@trpc/server";
+import { sdk } from "./_core/sdk";
+import { hashPassword, verifyPassword } from "./_core/password";
+import { getUserByEmail, createLocalUser } from "./db";
+import { stripPasswordHash } from "./_core/context";
 import { exportRouter } from "./export-routers";
 import { integrationRouter } from "./routers/integration";
 import { ideasRouter } from "./routers/ideas";
@@ -10,6 +15,10 @@ import { quizRouter } from "./routers/quiz";
 import { searchRouter } from "./routers/search";
 import { certificatesRouter } from "./routers/certificates";
 import { recommendationsRouter } from "./routers/recommendations";
+import { musicRouter } from "./routers/music";
+import { thumbnailsRouter } from "./routers/thumbnails";
+import { transcriptionRouter } from "./routers/transcription";
+import { youtubeRouter } from "./routers/youtube";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
@@ -36,6 +45,60 @@ import { z } from "zod/v4";
 // ─── Auth Router ─────────────────────────────────────────────────────────────
 const authRouter = router({
   me: publicProcedure.query((opts) => opts.ctx.user),
+  register: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        email: z.email(),
+        password: z.string().min(8),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const existing = await getUserByEmail(input.email);
+      if (existing) {
+        throw new TRPCError({ code: "CONFLICT", message: "E-mail já cadastrado" });
+      }
+
+      const user = await createLocalUser({
+        name: input.name,
+        email: input.email,
+        passwordHash: hashPassword(input.password),
+      });
+      if (!user) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Falha ao criar usuário" });
+      }
+
+      const sessionToken = await sdk.createSessionToken(user.openId, {
+        name: user.name || "",
+        expiresInMs: ONE_YEAR_MS,
+      });
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+      return stripPasswordHash(user);
+    }),
+  login: publicProcedure
+    .input(
+      z.object({
+        email: z.email(),
+        password: z.string().min(1),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const user = await getUserByEmail(input.email);
+      if (!user || !user.passwordHash || !verifyPassword(input.password, user.passwordHash)) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "E-mail ou senha inválidos" });
+      }
+
+      const sessionToken = await sdk.createSessionToken(user.openId, {
+        name: user.name || "",
+        expiresInMs: ONE_YEAR_MS,
+      });
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+
+      return stripPasswordHash(user);
+    }),
   logout: publicProcedure.mutation(({ ctx }) => {
     const cookieOptions = getSessionCookieOptions(ctx.req);
     ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
@@ -747,6 +810,10 @@ export const appRouter = router({
   search: searchRouter,
   certificates: certificatesRouter,
   recommendations: recommendationsRouter,
+  music: musicRouter,
+  thumbnails: thumbnailsRouter,
+  transcription: transcriptionRouter,
+  youtube: youtubeRouter,
 });
 
 export type AppRouter = typeof appRouter;
