@@ -1,83 +1,46 @@
-# Environment Variables Example
+# Variáveis de ambiente
 
-Copy this to `.env` file and fill in your values.
+Crie um arquivo `.env` na raiz do projeto (ele já está no `.gitignore`) com o conteúdo abaixo.
+Nunca commite chaves ou senhas.
 
 ```env
-# Database
-DATABASE_URL=mysql://sunoforge:sunoforgepass@localhost:3306/sunoforge
+# --- Obrigatórias ---
 
-# MySQL
-MYSQL_ROOT_PASSWORD=rootpassword
-MYSQL_DATABASE=sunoforge
-MYSQL_USER=sunoforge
-MYSQL_PASSWORD=sunoforgepass
+# Banco MySQL/TiDB (veja docs/DATABASE_SETUP.md para criar um TiDB Cloud grátis)
+DATABASE_URL=mysql://USUARIO.prefixo:SENHA@HOST:4000/test?ssl={"rejectUnauthorized":true}
 
-# Environment
-NODE_ENV=development
+# Assina o cookie de sessão do login local. Gere um valor aleatório:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+JWT_SECRET=troque-por-um-valor-aleatorio-longo
 
-# Auth & OAuth
-JWT_SECRET=your-jwt-secret-key-change-in-production
-VITE_APP_ID=your-oauth-app-id
-OAUTH_SERVER_URL=https://api.manus.im
-VITE_OAUTH_PORTAL_URL=https://manus.im
+# Identificador interno da sessão local (qualquer texto não vazio)
+VITE_APP_ID=scriptforge-local
 
-# YouTube (OAuth para YouTube Manager - console.cloud.google.com)
-YOUTUBE_CLIENT_ID=your-youtube-oauth-client-id
-YOUTUBE_CLIENT_SECRET=your-youtube-oauth-client-secret
+# --- IA de texto (Gemini, grátis) ---
 
-# API Keys
-BUILT_IN_FORGE_API_URL=https://api.manus.im
-BUILT_IN_FORGE_API_KEY=your-api-key
-VITE_FRONTEND_FORGE_API_KEY=your-frontend-key
-VITE_FRONTEND_FORGE_API_URL=https://api.manus.im
+# Chave grátis em https://aistudio.google.com/apikey
+BUILT_IN_FORGE_API_URL=https://generativelanguage.googleapis.com/v1beta/openai
+BUILT_IN_FORGE_API_KEY=sua-chave-gemini
 
-# Owner Info
-OWNER_NAME=Owner
-OWNER_OPEN_ID=owner-id
+# Opcional: modelo usado. Padrão: gemini-flash-lite-latest
+# LLM_MODEL=gemini-flash-latest
 
-# App Config
-VITE_APP_TITLE=SunoForge
-VITE_APP_LOGO=/logo.png
+# --- Opcionais ---
 
-# Analytics (optional)
-VITE_ANALYTICS_ENDPOINT=https://analytics.example.com
-VITE_ANALYTICS_WEBSITE_ID=your-website-id
+# Porta do servidor (padrão 3000; se ocupada, usa a próxima livre)
+# PORT=3000
+
+# YouTube Manager (exige projeto no Google Cloud com YouTube Data API v3).
+# Redirect URI a autorizar: <sua-origem>/api/youtube/oauth/callback
+# YOUTUBE_CLIENT_ID=
+# YOUTUBE_CLIENT_SECRET=
+
+# Promove um usuário a admin no login OAuth (não afeta cadastro local)
+# OWNER_OPEN_ID=
 ```
 
-## Descrição das Variáveis
+## Observações
 
-### Database
-- `DATABASE_URL`: Connection string do MySQL
-
-### MySQL (Docker)
-- `MYSQL_ROOT_PASSWORD`: Senha do root
-- `MYSQL_DATABASE`: Nome do banco
-- `MYSQL_USER`: Usuário do banco
-- `MYSQL_PASSWORD`: Senha do usuário
-
-### Auth
-- `JWT_SECRET`: Chave para assinar JWTs (use valor aleatório forte)
-- `VITE_APP_ID`: ID da aplicação OAuth
-- `OAUTH_SERVER_URL`: URL do servidor OAuth
-- `VITE_OAUTH_PORTAL_URL`: URL do portal de login
-
-### YouTube
-- `YOUTUBE_CLIENT_ID` / `YOUTUBE_CLIENT_SECRET`: credenciais OAuth do Google Cloud Console (projeto com a YouTube Data API v3 habilitada). Redirect URI a autorizar: `<sua-origem>/api/youtube/oauth/callback`
-
-### API Keys
-- `BUILT_IN_FORGE_API_URL`: URL da API Manus
-- `BUILT_IN_FORGE_API_KEY`: Chave da API (backend)
-- `VITE_FRONTEND_FORGE_API_KEY`: Chave da API (frontend)
-- `VITE_FRONTEND_FORGE_API_URL`: URL da API (frontend)
-
-### Owner
-- `OWNER_NAME`: Nome do proprietário
-- `OWNER_OPEN_ID`: ID OpenID do proprietário
-
-### App
-- `VITE_APP_TITLE`: Título da aplicação
-- `VITE_APP_LOGO`: URL do logo
-
-### Analytics (Opcional)
-- `VITE_ANALYTICS_ENDPOINT`: Endpoint de analytics
-- `VITE_ANALYTICS_WEBSITE_ID`: ID do website para analytics
+- **Login:** é local (e-mail e senha guardados no seu próprio banco). Não depende de serviço externo.
+- **Imagens:** geradas via Pollinations.ai (sem chave) e salvas na pasta `uploads/`, servida em `/uploads`.
+- **Windows:** variáveis definidas no sistema também funcionam, mas o `.env` é mais simples e fica só neste projeto.

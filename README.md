@@ -2,6 +2,28 @@
 
 **ScriptForge** é uma plataforma web completa que unifica criação de conteúdo YouTube com geração de música assistida por IA. Combine roteiros, ideias, música, thumbnails e upload direto para YouTube em um único estúdio criativo com interface dark cyber-music.
 
+## 🚀 Como rodar (local e grátis)
+
+Requisitos: Node 22+ e pnpm (`npm install -g pnpm`).
+
+```bash
+pnpm install
+```
+
+1. Crie o `.env` conforme [ENV_EXAMPLE.md](ENV_EXAMPLE.md) (banco TiDB grátis: [docs/DATABASE_SETUP.md](docs/DATABASE_SETUP.md); chave Gemini grátis: aistudio.google.com/apikey).
+2. Crie as tabelas e os dados de referência:
+   ```bash
+   pnpm db:push
+   pnpm db:seed
+   ```
+3. Suba o app e abra o endereço que aparecer no log (`Server running on http://localhost:XXXX`):
+   ```bash
+   pnpm dev
+   ```
+4. Em **Sign In**, crie uma conta local (e-mail e senha) e use os geradores.
+
+Verificação: `pnpm check` (tipos) e `pnpm test` (testes; os de IA usam sua chave Gemini). Para produção: `pnpm build` e `pnpm start`.
+
 ## 🎯 O que é ScriptForge?
 
 ScriptForge unifica duas plataformas poderosas:
