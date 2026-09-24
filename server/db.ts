@@ -1,4 +1,5 @@
 import { eq, and, or, like, desc } from "drizzle-orm";
+import * as allTables from "../drizzle/schema";
 import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser,
@@ -162,11 +163,65 @@ export async function createLocalUser(user: {
     name: user.name,
     email: user.email,
     passwordHash: user.passwordHash,
+    termsAcceptedAt: new Date(),
     loginMethod: "local",
     role: "user",
   });
 
   return getUserByOpenId(openId);
+}
+
+// Tabelas com dados de usuário (coluna userId). Usadas na exportação e exclusão (LGPD).
+const USER_DATA_TABLES: Array<[string, any]> = [
+  ["userPreferences", allTables.userPreferences],
+  ["ideas", allTables.ideas],
+  ["scripts", allTables.scripts],
+  ["userFlashcardProgress", allTables.userFlashcardProgress],
+  ["userCertificates", allTables.userCertificates],
+  ["searchHistory", allTables.searchHistory],
+  ["quizAttempts", allTables.quizAttempts],
+  ["quizScores", allTables.quizScores],
+  ["youtubeAuth", allTables.youtubeAuth],
+  ["youtubeUploads", allTables.youtubeUploads],
+  ["videoAnalytics", allTables.videoAnalytics],
+  ["projects", allTables.projects],
+  ["generations", allTables.generations],
+  ["communityPosts", allTables.communityPosts],
+  ["chatMessages", allTables.chatMessages],
+  ["styleCombinations", allTables.styleCombinations],
+  ["exports", allTables.exports],
+  ["scriptMusicLinks", allTables.scriptMusicLinks],
+  ["projectScriptLinks", allTables.projectScriptLinks],
+  ["aiMusic", allTables.aiMusic],
+];
+
+// Cópia dos dados do usuário. Não inclui tokens do YouTube nem o hash da senha.
+export async function exportUserData(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [account] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  const { passwordHash: _passwordHash, ...safeAccount } = account ?? ({} as typeof account);
+
+  const data: Record<string, unknown> = { account: safeAccount };
+  for (const [name, table] of USER_DATA_TABLES) {
+    if (name === "youtubeAuth") continue;
+    data[name] = await (db as any).select().from(table).where(eq(table.userId, userId));
+  }
+  return data;
+}
+
+// Apaga a conta e todos os dados do usuário.
+export async function deleteUserAccount(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.transaction(async (tx) => {
+    for (const [, table] of USER_DATA_TABLES) {
+      await (tx as any).delete(table).where(eq(table.userId, userId));
+    }
+    await tx.delete(users).where(eq(users.id, userId));
+  });
 }
 
 // ============================================================================

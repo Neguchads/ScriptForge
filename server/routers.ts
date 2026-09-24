@@ -1,8 +1,8 @@
-import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { COOKIE_NAME } from "@shared/const";
 import { TRPCError } from "@trpc/server";
 import { sdk } from "./_core/sdk";
 import { hashPassword, verifyPassword } from "./_core/password";
-import { getUserByEmail, createLocalUser } from "./db";
+import { getUserByEmail, createLocalUser, exportUserData, deleteUserAccount } from "./db";
 import { stripPasswordHash } from "./_core/context";
 import { exportRouter } from "./export-routers";
 import { integrationRouter } from "./routers/integration";
@@ -43,14 +43,19 @@ import { eq, desc, and, like, or } from "drizzle-orm";
 import { z } from "zod/v4";
 
 // ─── Auth Router ─────────────────────────────────────────────────────────────
+const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+// Hash falso usado quando o e-mail não existe, pra login levar o mesmo tempo nos dois casos.
+const DUMMY_PASSWORD_HASH = hashPassword("senha-falsa-para-igualar-tempo");
+
 const authRouter = router({
   me: publicProcedure.query((opts) => opts.ctx.user),
   register: publicProcedure
     .input(
       z.object({
-        name: z.string().min(1),
-        email: z.email(),
-        password: z.string().min(8),
+        name: z.string().trim().min(1).max(100),
+        email: z.email().max(254),
+        password: z.string().min(8).max(128),
+        acceptTerms: z.literal(true),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -70,34 +75,50 @@ const authRouter = router({
 
       const sessionToken = await sdk.createSessionToken(user.openId, {
         name: user.name || "",
-        expiresInMs: ONE_YEAR_MS,
+        expiresInMs: SESSION_MS,
       });
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: SESSION_MS });
 
       return stripPasswordHash(user);
     }),
   login: publicProcedure
     .input(
       z.object({
-        email: z.email(),
-        password: z.string().min(1),
+        email: z.email().max(254),
+        password: z.string().min(1).max(128),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const user = await getUserByEmail(input.email);
-      if (!user || !user.passwordHash || !verifyPassword(input.password, user.passwordHash)) {
+      const passwordOk = verifyPassword(input.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
+      if (!user || !user.passwordHash || !passwordOk) {
         throw new TRPCError({ code: "UNAUTHORIZED", message: "E-mail ou senha inválidos" });
       }
 
       const sessionToken = await sdk.createSessionToken(user.openId, {
         name: user.name || "",
-        expiresInMs: ONE_YEAR_MS,
+        expiresInMs: SESSION_MS,
       });
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: SESSION_MS });
 
       return stripPasswordHash(user);
+    }),
+  // LGPD: cópia dos dados do próprio usuário.
+  exportMyData: protectedProcedure.query(({ ctx }) => exportUserData(ctx.user.id)),
+  // LGPD: apaga a conta e todos os dados. Exige a senha como confirmação.
+  deleteAccount: protectedProcedure
+    .input(z.object({ password: z.string().min(1).max(128) }))
+    .mutation(async ({ input, ctx }) => {
+      const user = await getUserByEmail(ctx.user.email ?? "");
+      if (!user?.passwordHash || !verifyPassword(input.password, user.passwordHash)) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Senha incorreta" });
+      }
+      await deleteUserAccount(ctx.user.id);
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      return { success: true } as const;
     }),
   logout: publicProcedure.mutation(({ ctx }) => {
     const cookieOptions = getSessionCookieOptions(ctx.req);
@@ -111,7 +132,7 @@ const lyricsRouter = router({
   generate: publicProcedure
     .input(
       z.object({
-        theme: z.string().min(1),
+        theme: z.string().min(1).max(2000),
         genre: z.string().optional(),
         mood: z.string().optional(),
         structure: z.string().optional(),
@@ -310,7 +331,7 @@ const fullSongRouter = router({
   generate: publicProcedure
     .input(
       z.object({
-        theme: z.string(),
+        theme: z.string().max(2000),
         genre: z.string(),
         mood: z.string().optional(),
         language: z.string().default("pt-BR"),
@@ -370,7 +391,7 @@ const imageRouter = router({
   generate: publicProcedure
     .input(
       z.object({
-        prompt: z.string().min(1),
+        prompt: z.string().min(1).max(2000),
         style: z.string().optional(),
         genre: z.string().optional(),
         mood: z.string().optional(),
@@ -468,7 +489,7 @@ const libraryRouter = router({
       z.object({
         type: z.enum(["lyrics", "style_prompt", "full_song", "image", "audio_lab", "chat"]),
         title: z.string().optional(),
-        content: z.string(),
+        content: z.string().max(20000),
         metadata: z.record(z.string(), z.unknown()).optional(),
         imageUrl: z.string().optional(),
         projectId: z.number().optional(),
@@ -495,8 +516,8 @@ const libraryRouter = router({
         type: z.enum(["lyrics", "style_prompt", "full_song", "image", "audio_lab", "chat", "all"]).default("all"),
         search: z.string().optional(),
         favoritesOnly: z.boolean().default(false),
-        limit: z.number().default(20),
-        offset: z.number().default(0),
+        limit: z.number().int().min(1).max(100).default(20),
+        offset: z.number().int().min(0).default(0),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -566,8 +587,8 @@ const exploreRouter = router({
       z.object({
         genre: z.string().optional(),
         search: z.string().optional(),
-        limit: z.number().default(20),
-        offset: z.number().default(0),
+        limit: z.number().int().min(1).max(100).default(20),
+        offset: z.number().int().min(0).default(0),
       })
     )
     .query(async ({ input }) => {
@@ -610,7 +631,7 @@ const chatRouter = router({
   send: publicProcedure
     .input(
       z.object({
-        message: z.string().min(1),
+        message: z.string().min(1).max(4000),
         history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() })).optional(),
       })
     )
@@ -649,7 +670,7 @@ You help musicians and creators craft better songs and prompts for AI music gene
     }),
 
   history: protectedProcedure
-    .input(z.object({ limit: z.number().default(50) }))
+    .input(z.object({ limit: z.number().int().min(1).max(100).default(50) }))
     .query(async ({ ctx, input }) => {
       const db = await getDb();
       if (!db) return { messages: [] };

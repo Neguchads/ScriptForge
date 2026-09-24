@@ -21,6 +21,7 @@ import Explore from "./pages/Explore";
 import Profile from "./pages/Profile";
 import Export from "./pages/Export";
 import Login from "./pages/Login";
+import { Privacy, Terms } from "./pages/Legal";
 
 function Router() {
   return (
@@ -42,6 +43,8 @@ function Router() {
         <Route path="/profile" component={Profile} />
         <Route path="/export" component={Export} />
         <Route path="/login" component={Login} />
+        <Route path="/privacidade" component={Privacy} />
+        <Route path="/termos" component={Terms} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
