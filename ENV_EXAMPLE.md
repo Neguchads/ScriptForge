@@ -22,7 +22,9 @@ VITE_APP_ID=scriptforge-local
 BUILT_IN_FORGE_API_URL=https://generativelanguage.googleapis.com/v1beta/openai
 BUILT_IN_FORGE_API_KEY=sua-chave-gemini
 
-# Opcional: modelo usado. Padrão: gemini-flash-lite-latest
+# Opcional: modelo usado. Padrão: gemini-2.5-flash-lite (o mais estável no plano grátis).
+# Modelos maiores (gemini-flash-latest, 3.x) dão mais qualidade, mas no plano grátis
+# ficam lentos ou dão erro 503 com frequência.
 # LLM_MODEL=gemini-flash-latest
 
 # --- Opcionais ---

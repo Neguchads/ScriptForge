@@ -1,44 +1,33 @@
-# Build stage
+# Estágio de build
 FROM node:22-alpine AS builder
-
 WORKDIR /app
+RUN npm install -g pnpm@10
 
-# Copy package files
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
+RUN pnpm install --frozen-lockfile
 
-# Install dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
-
-# Copy source code
 COPY . .
-
-# Build application
 RUN pnpm build
 
-# Runtime stage
+# Estágio de execução (só dependências de produção)
 FROM node:22-alpine
-
+ENV NODE_ENV=production \
+    PORT=3000
 WORKDIR /app
+RUN npm install -g pnpm@10
 
-# Install pnpm
-RUN npm install -g pnpm
-
-# Copy package files
 COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches
+RUN pnpm install --frozen-lockfile --prod && pnpm store prune
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
-
-# Copy built application from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
 
-# Expose port
+# Roda sem privilégios de root
+USER node
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+  CMD node -e "fetch('http://localhost:'+(process.env.PORT||3000)).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
-# Start application
 CMD ["node", "dist/index.js"]

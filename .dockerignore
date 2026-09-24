@@ -1,0 +1,10 @@
+# Nunca colocar segredos, dependências locais ou artefatos dentro da imagem
+.env
+.env.*
+node_modules
+dist
+.git
+.claude
+*.log
+uploads
+docs
