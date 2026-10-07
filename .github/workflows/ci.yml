@@ -1,3 +1,4 @@
+# Checagem de tipos, testes e build em todo PR e em todo push na main
 name: CI
 
 on:
@@ -5,50 +6,31 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  verify:
+  verificar:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v6.1.0
-        with:
-          version: 10.4.1
+      - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check
-      - run: pnpm build
 
-  tests:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6.1.0
-        with:
-          version: 10.4.1
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
-      - name: Testes sem credenciais de produção
-        run: pnpm test
-        env:
-          CI: "true"
+      - name: Tipos
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build

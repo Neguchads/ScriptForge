@@ -1,3 +1,5 @@
+# Atualizações automáticas de dependências.
+# Minor e patch chegam juntas num PR só por ecossistema; major vem separada para revisão.
 version: 2
 updates:
   - package-ecosystem: npm
@@ -6,15 +8,32 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        update-types:
+          - minor
+          - patch
+
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
       day: monday
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 5
+    groups:
+      docker-minor-patch:
+        update-types:
+          - minor
+          - patch
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    groups:
+      github_actions-minor-patch:
+        update-types:
+          - minor
+          - patch
