@@ -63,7 +63,7 @@ docker-compose logs -f app
 ```bash
 # O banco é inicializado automaticamente
 # Verifique se a migração foi aplicada
-docker-compose exec mysql mysql -u sunoforge -p sunoforgepass sunoforge -e "SHOW TABLES;"
+docker-compose exec mysql mysql -u sunoforge -p SUA_SENHA_AQUI sunoforge -e "SHOW TABLES;"
 ```
 
 ### 5. Acesse a Aplicação
@@ -95,7 +95,7 @@ docker-compose build --no-cache
 docker-compose exec app pnpm test
 
 # Acessar o MySQL
-docker-compose exec mysql mysql -u sunoforge -p sunoforgepass sunoforge
+docker-compose exec mysql mysql -u sunoforge -p SUA_SENHA_AQUI sunoforge
 ```
 
 ## Instalação Local (Node.js)
@@ -122,7 +122,7 @@ sudo systemctl start mysql
 
 # Crie o banco de dados
 mysql -u root -p -e "CREATE DATABASE sunoforge;"
-mysql -u root -p -e "CREATE USER 'sunoforge'@'localhost' IDENTIFIED BY 'sunoforgepass';"
+mysql -u root -p -e "CREATE USER 'sunoforge'@'localhost' IDENTIFIED BY 'SUA_SENHA_AQUI';"
 mysql -u root -p -e "GRANT ALL PRIVILEGES ON sunoforge.* TO 'sunoforge'@'localhost';"
 ```
 
@@ -204,7 +204,7 @@ docker-compose up -d -p 3001:3000
 echo $DATABASE_URL
 
 # Teste a conexão
-mysql -u sunoforge -p sunoforgepass -h localhost sunoforge
+mysql -u sunoforge -p SUA_SENHA_AQUI -h localhost sunoforge
 
 # Verifique os logs
 docker-compose logs mysql
@@ -276,17 +276,17 @@ services:
 
 ```bash
 # Backup completo
-docker-compose exec mysql mysqldump -u sunoforge -p sunoforgepass sunoforge > backup.sql
+docker-compose exec mysql mysqldump -u sunoforge -p SUA_SENHA_AQUI sunoforge > backup.sql
 
 # Backup com data
-docker-compose exec mysql mysqldump -u sunoforge -p sunoforgepass sunoforge > backup_$(date +%Y%m%d_%H%M%S).sql
+docker-compose exec mysql mysqldump -u sunoforge -p SUA_SENHA_AQUI sunoforge > backup_$(date +%Y%m%d_%H%M%S).sql
 ```
 
 ### Restore do Banco
 
 ```bash
 # Restore do backup
-docker-compose exec -T mysql mysql -u sunoforge -p sunoforgepass sunoforge < backup.sql
+docker-compose exec -T mysql mysql -u sunoforge -p SUA_SENHA_AQUI sunoforge < backup.sql
 ```
 
 ## Performance Tuning
