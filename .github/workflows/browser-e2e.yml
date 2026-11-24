@@ -1,0 +1,53 @@
+# Real Chromium smoke tests of compiled frontend; no paid API keys or production data.
+name: Browser E2E (Playwright)
+'on':
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromium:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Install isolated Playwright without modifying lockfile
+        shell: bash
+        run: |
+          npm install --prefix "$RUNNER_TEMP/playwright" --no-save --no-audit --no-fund --ignore-scripts playwright@1.57.0
+          "$RUNNER_TEMP/playwright/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Browser navigation against built Vite preview
+        shell: bash
+        env:
+          E2E_BASE_URL: http://127.0.0.1:4173
+        run: |
+          set -euo pipefail
+          pnpm exec vite preview --host 127.0.0.1 --port 4173 --strictPort >"$RUNNER_TEMP/vite-preview.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in {1..40}; do
+            if curl --fail --silent --output /dev/null "$E2E_BASE_URL"; then ready=1; break; fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then cat "$RUNNER_TEMP/vite-preview.log"; exit 1; fi
+          NODE_PATH="$RUNNER_TEMP/playwright/node_modules" node --test tests/e2e/*.test.cjs
+
