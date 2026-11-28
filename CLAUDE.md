@@ -1,47 +1,58 @@
 # CLAUDE.md — Diretrizes de trabalho
 
 Regras de trabalho do Claude neste repositório. Idioma padrão: português do Brasil.
-Regras específicas deste projeto (abaixo, se houver) têm prioridade.
+Fonte das regras gerais: `Neguchads/claude-config`. Regras específicas deste projeto (seção "Este projeto") têm prioridade.
+
+## Este projeto
+
+Verificação local (rodar na branch do PR antes de qualquer merge):
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm check   # tsc --noEmit
+pnpm test    # vitest run
+pnpm build
+```
+
+O CI (`.github/workflows/ci.yml`) roda `check` e `build` em todo PR; repositório público, então o GitHub Actions é grátis aqui.
 
 ## Pull requests e merge
 
-- Trabalhar em **fatias médias e inteligentes**: blocos grandes que alteram várias partes importantes. Evitar PRs minúsculos e picotados.
-- Ao concluir um bloco: analisar e testar o que foi feito. Se estiver ok, **fazer o merge sozinho** logo após os testes.
-- Deixar PR aberto **somente** quando houver decisão grande que dependa do usuário. Se o Claude consegue resolver sozinho, resolve e faz o merge.
-- Se um merge quebrar algo: **reverter primeiro**, investigar depois.
-- Branches: depois que o PR é mergeado, a branch dele pode ser apagada (o conteúdo já está na `main`, e o GitHub permite restaurar pelo PR). Nunca apagar a `main` nem branch **não mergeada** sem avisar antes.
-- Nunca forçar push (`--force`) sem avisar antes.
-- Se o ambiente bloquear uma ação (permissão, proxy), não contornar: avisar o usuário e dizer como ele mesmo pode fazer.
+- Fluxo autônomo: branch → commits → push da branch → PR → verificação → merge. Nunca commitar direto na `main`.
+- Trabalhar em **fatias médias**: blocos coerentes que entregam algo inteiro. Evitar PRs minúsculos e picotados.
+- **Portão do merge (testes reais).** Só fazer merge sozinho se TUDO for verdade:
+  1. A verificação local acima passou na branch do PR.
+  2. Existem testes que exercitam a mudança: código novo ou alterado ganhou teste novo ou atualizado.
+  3. Mudança de interface: verificada rodando de verdade (preview ou Playwright), não só por teste unitário.
+  4. Nenhum teste foi apagado, pulado (`skip`, `.only`) ou afrouxado para passar. Se precisar mudar um teste existente, explicar no PR e deixar aberto.
+  5. O CI do PR está verde.
+  6. A descrição do PR registra os comandos rodados, o resultado e o que **não** foi testado.
+- Deixar o PR aberto e chamar o usuário quando houver decisão grande, migração ou drop de banco, mudança em autenticação, pagamento ou dados pessoais, algo que gere custo, ou deploy de produção.
+- Merge com squash. Se um merge quebrar algo: **reverter primeiro**, investigar depois.
+- Depois do merge, apagar a branch do PR. Nunca apagar a `main` nem branch **não mergeada** sem avisar.
+- Nunca `git push --force` nem `git reset --hard` sem confirmação.
+- Se o ambiente bloquear uma ação (permissão, hook, proxy), não contornar: avisar e dizer como o usuário pode fazer.
 - A cada merge, relatório curto (duas ou três linhas): o que mudou e o que vem a seguir.
-- Mensagens de commit padronizadas (Conventional Commits: `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`).
+- Mensagens de commit em inglês, Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`).
 
 ## Roadmap e documentação
 
-- Todo projeto começa com um `ROADMAP.md`, criado logo no início.
-- Após cada merge: conferir o roadmap e adaptá-lo aos próximos passos. Manter um resumo fácil de bater o olho (feito, em andamento, planejado).
-- De tempos em tempos: análise geral do projeto (andamento, o que precisa mudar, roadmap versus estado atual).
-- Após vários blocos/merges: análise completa da documentação e atualização geral, além de ir atualizando aos poucos.
-- Manter o `README.md` sempre atualizado, com como instalar e rodar.
-- Registrar decisões grandes em `docs/DECISIONS.md`: o que foi escolhido e por quê.
+- Manter `ROADMAP.md` curto (feito, em andamento, planejado) e atualizá-lo após cada merge.
+- Manter o `README.md` atualizado: problema que resolve, tecnologias e por quê, como instalar e rodar.
+- Registrar decisões técnicas em `docs/DECISIONS.md`: o que foi escolhido e por quê.
 
 ## Custo e ferramentas
 
-- Preferir ferramentas **gratuitas e open source**, principalmente APIs gratuitas. O objetivo é o mínimo de custo possível.
-- Preferir instalar e configurar ferramentas prontas em vez de criar do zero.
-- Se uma ferramenta gratuita for ruim, mostrar a alternativa gratuita antes de sugerir qualquer coisa paga.
+- Preferir ferramentas **gratuitas e open source**. Se a gratuita for ruim, mostrar outra gratuita antes de sugerir algo pago.
+- Poucas dependências: antes de adicionar uma, justificar (resolve dor real? custo de manter? dá para fazer sem?).
 - Vigiar o limite das APIs gratuitas e avisar antes de estourar a cota.
-- Checar a licença de ferramentas open source **apenas para informar** o usuário. Não decidir por ele: se ele pedir para usar, usar.
-- De tempos em tempos, avaliar se há conexões MCP boas para o projeto. Manter poucos MCPs ligados, para não pesar o contexto.
 
 ## Qualidade e segurança
 
-- Em todo projeto novo, configurar testes automáticos e lint gratuitos, para o merge automático ter segurança.
-- Chaves de API e segredos **sempre em variáveis de ambiente**, nunca no repositório. Manter um `.env.example` sem valores reais.
-- Fixar a versão das bibliotecas, para o projeto não quebrar sozinho com atualização.
-- Ativar varredura gratuita de segurança das dependências (Dependabot) nos projetos que tiverem dependências.
+- Segredos **sempre em variáveis de ambiente**, nunca no repositório. Manter `.env.example` sem valores reais.
+- Fixar a versão das bibliotecas. Dependabot ligado para as dependências.
 - **Pedir confirmação antes** de qualquer coisa que gaste dinheiro, apague dados ou mexa em produção.
 
 ## Autonomia
 
-O Claude deve trabalhar de forma autônoma e inteligente nos projetos, parando para perguntar só nas decisões que realmente dependem do usuário.
-
+Trabalhar de forma autônoma, parando para perguntar só nas decisões que realmente dependem do usuário.
