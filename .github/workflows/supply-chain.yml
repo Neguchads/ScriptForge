@@ -1,0 +1,67 @@
+# Manual evidence only. Never publishes a GitHub Release or uploads game-derived binaries.
+name: Package integrity and SBOM (manual)
+'on':
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Create evidence staging directory
+        run: mkdir -p evidence
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify production frontend compilation
+        run: pnpm build
+      - name: Package static frontend (not a standalone backend)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/public/index.html
+          tar -czf evidence/frontend-static.tar.gz -C dist/public .
+      - name: Generate source dependency inventory (SPDX JSON)
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: evidence/sbom.spdx.json
+          upload-artifact: "false"
+          upload-release-assets: "false"
+      - name: Build evidence bundle and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd evidence
+          sha256sum frontend-static.tar.gz > "frontend-static.tar.gz.sha256"
+      - name: Attest package provenance (Sigstore)
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: evidence/frontend-static.tar.gz
+      - name: Attest SPDX SBOM to the same package
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: evidence/frontend-static.tar.gz
+          sbom-path: evidence/sbom.spdx.json
+      - name: Save reviewable evidence; no release publication
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ScriptForge-stage2-evidence
+          path: |
+            evidence/frontend-static.tar.gz
+            evidence/frontend-static.tar.gz.sha256
+            evidence/sbom.spdx.json
+          retention-days: 14
+          if-no-files-found: error
